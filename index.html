@@ -37,17 +37,18 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 1000;
-    background: rgba(27, 54, 93, 0.97);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(40,167,69,0.25);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
     padding: 0 5%;
     height: 68px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: box-shadow 0.3s;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
   }
-  nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.35); }
+  nav.scrolled { box-shadow: 0 8px 28px rgba(15, 23, 42, 0.12); }
+  nav.nav-hidden { transform: translateY(-100%); }
 
   .nav-logo {
     display: inline-flex;
@@ -70,7 +71,7 @@
     margin-left: auto;
   }
   .nav-links a {
-    color: rgba(255,255,255,0.82);
+    color: #1b365d !important;
     text-decoration: none;
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
@@ -88,8 +89,9 @@
     background: var(--green);
     transition: width 0.3s;
   }
-  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover { color: var(--green-dark); }
   .nav-links a:hover::after { width: 100%; }
+  .nav-links a:not(.nav-cta) { color: #1b365d !important; }
 
   .nav-cta {
     background: var(--green);
@@ -114,7 +116,7 @@
   }
   .hamburger span {
     display: block; width: 24px; height: 2px;
-    background: white; border-radius: 2px;
+    background: var(--navy); border-radius: 2px;
     transition: all 0.3s;
   }
 
@@ -938,17 +940,18 @@
       display: flex;
       position: fixed;
       top: 68px; left: 0; right: 0;
-      background: var(--navy-dark);
+      background: var(--white);
       flex-direction: column;
       padding: 20px 5%;
       gap: 8px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.14);
     }
     .nav-links.open a {
       display: block;
       padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      color: #1b365d !important;
       font-size: 1rem;
       width: 100%;
     }
@@ -975,7 +978,7 @@
 <!-- NAV -->
 <nav id="navbar">
   <a href="#home" class="nav-logo" aria-label="Visifin home">
-    <img src="Assets/logo.png" alt="Visifin CFO &amp; Accounting Solutions" class="brand-logo-img">
+    <img src="assets/logo.png" alt="Visifin CFO &amp; Accounting Solutions" class="brand-logo-img">
   </a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#home">Home</a></li>
@@ -1602,7 +1605,7 @@ Place this code in the empty space below. */
 <footer>
   <div class="footer-inner">
     <a href="#home" class="footer-logo" aria-label="Visifin home">
-      <img src="Assets/logo.png" alt="Visifin CFO &amp; Accounting Solutions" class="brand-logo-img">
+      <img src="assets/logo.png" alt="Visifin CFO &amp; Accounting Solutions" class="brand-logo-img">
     </a>
     <nav class="footer-links">
       <a href="#home">Home</a>
@@ -1621,9 +1624,35 @@ Place this code in the empty space below. */
 </footer>
 
 <script>
-  // ── Sticky nav shadow ──
+  // ── Sticky nav with hide/show by scroll direction ──
+  const navbar = document.getElementById('navbar');
+  let lastScrollY = window.scrollY;
+  let downScrollAccumulator = 0;
+
   window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+    const currentY = window.scrollY;
+    const delta = currentY - lastScrollY;
+
+    navbar.classList.toggle('scrolled', currentY > 10);
+
+    if (currentY <= 30) {
+      navbar.classList.remove('nav-hidden');
+      downScrollAccumulator = 0;
+      lastScrollY = currentY;
+      return;
+    }
+
+    if (delta < -2) {
+      navbar.classList.add('nav-hidden');
+      downScrollAccumulator = 0;
+    } else if (delta > 0) {
+      downScrollAccumulator += delta;
+      if (downScrollAccumulator > 24) {
+        navbar.classList.remove('nav-hidden');
+      }
+    }
+
+    lastScrollY = currentY;
   });
 
   // ── Mobile menu ──
